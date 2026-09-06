@@ -1,23 +1,3 @@
-/*
- *
- * Copyright 2020 gRPC authors.
- *
- * Licensed under the Apache License, Version 2.0 (the "License");
- * you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at
- *
- *     http://www.apache.org/licenses/LICENSE-2.0
- *
- * Unless required by applicable law or agreed to in writing, software
- * distributed under the License is distributed on an "AS IS" BASIS,
- * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
- * See the License for the specific language governing permissions and
- * limitations under the License.
- *
- */
-
-// Binary server demonstrated gRPC's support for xDS APIs on the server-side. It
-// exposes the Greeter service that will response with the hostname.
 package main
 
 import (
@@ -25,9 +5,7 @@ import (
 	"flag"
 	"fmt"
 	"log"
-	rand "math/rand/v2"
 	"net"
-	"os"
 
 	"google.golang.org/grpc"
 	"google.golang.org/grpc/credentials/insecure"
@@ -44,26 +22,17 @@ var (
 	xdsCreds = flag.Bool("xds_creds", false, "whether the server should use xDS APIs to receive security configuration")
 )
 
-// server implements helloworld.GreeterServer interface.
 type server struct {
 	pb.UnimplementedGreeterServer
 	serverName string
 }
 
-// SayHello implements helloworld.GreeterServer interface.
 func (s *server) SayHello(_ context.Context, in *pb.HelloRequest) (*pb.HelloReply, error) {
-	log.Printf("Received: %v", in.GetName())
-	return &pb.HelloReply{Message: "Hello " + in.GetName() + ", from " + s.serverName}, nil
+	_ = "STUB: not implemented"
+	return nil, nil
 }
 
-func determineHostname() string {
-	hostname, err := os.Hostname()
-	if err != nil {
-		log.Printf("Failed to get hostname: %v, will generate one", err)
-		return fmt.Sprintf("generated-%03d", rand.Int()%100)
-	}
-	return hostname
-}
+func determineHostname() string { _ = "STUB: not implemented"; return "" }
 
 func main() {
 	flag.Parse()

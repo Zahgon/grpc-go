@@ -1,23 +1,3 @@
-/*
- *
- * Copyright 2023 gRPC authors.
- *
- * Licensed under the Apache License, Version 2.0 (the "License");
- * you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at
- *
- *     http://www.apache.org/licenses/LICENSE-2.0
- *
- * Unless required by applicable law or agreed to in writing, software
- * distributed under the License is distributed on an "AS IS" BASIS,
- * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
- * See the License for the specific language governing permissions and
- * limitations under the License.
- *
- */
-
-// Binary client demonstrates how the gRPC flow control blocks sending when the
-// receiver is not ready.
 package main
 
 import (
@@ -35,7 +15,7 @@ import (
 
 var addr = flag.String("addr", "localhost:50052", "the address to connect to")
 
-var payload = string(make([]byte, 8*1024)) // 8KB
+var payload = string(make([]byte, 8*1024))
 
 func main() {
 	flag.Parse()
@@ -56,8 +36,6 @@ func main() {
 	}
 	log.Printf("New stream began.")
 
-	// First we will send data on the stream until we cannot send any more.  We
-	// detect this by not seeing a message sent 1s after the last sent message.
 	stopSending := grpcsync.NewEvent()
 	sentOne := make(chan struct{})
 	go func() {
@@ -85,11 +63,8 @@ func main() {
 		}
 	}
 
-	// Next, we wait 2 seconds before reading from the stream, to give the
-	// server an opportunity to block while sending its responses.
 	time.Sleep(2 * time.Second)
 
-	// Finally, read all the data sent by the server to allow it to unblock.
 	for i := 0; true; i++ {
 		if _, err := stream.Recv(); err != nil {
 			log.Printf("Read %v messages.", i)

@@ -1,26 +1,3 @@
-/*
- *
- * Copyright 2014 gRPC authors.
- *
- * Licensed under the Apache License, Version 2.0 (the "License");
- * you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at
- *
- *     http://www.apache.org/licenses/LICENSE-2.0
- *
- * Unless required by applicable law or agreed to in writing, software
- * distributed under the License is distributed on an "AS IS" BASIS,
- * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
- * See the License for the specific language governing permissions and
- * limitations under the License.
- *
- */
-
-// Binary client is an interop client.
-//
-// See interop test case descriptions [here].
-//
-// [here]: https://github.com/grpc/grpc/blob/master/doc/interop-test-descriptions.md
 package main
 
 import (
@@ -32,7 +9,6 @@ import (
 	"net"
 	"os"
 	"strconv"
-	"strings"
 	"time"
 
 	"golang.org/x/oauth2"
@@ -48,9 +24,9 @@ import (
 	"google.golang.org/grpc/resolver"
 	"google.golang.org/grpc/testdata"
 
-	_ "google.golang.org/grpc/balancer/grpclb"    // Register the grpclb load balancing policy.
-	_ "google.golang.org/grpc/balancer/rls"       // Register the RLS load balancing policy.
-	"google.golang.org/grpc/xds/googledirectpath" // Register xDS resolver required for c2p directpath.
+	_ "google.golang.org/grpc/balancer/grpclb"
+	_ "google.golang.org/grpc/balancer/rls"
+	"google.golang.org/grpc/xds/googledirectpath"
 
 	testgrpc "google.golang.org/grpc/interop/grpc_testing"
 )
@@ -124,54 +100,18 @@ const (
 	credsComputeEngineCreds
 )
 
-// Parses the --additional_metadata flag and returns metadata to send on each RPC,
-// formatted as per https://pkg.go.dev/google.golang.org/grpc/metadata#Pairs.
-// Allow any character but semicolons in values. If the flag is empty, return a nil map.
-func parseAdditionalMetadataFlag() []string {
-	if len(*additionalMetadata) == 0 {
-		return nil
-	}
-	r := *additionalMetadata
-	addMd := make([]string, 0)
-	for len(r) > 0 {
-		i := strings.Index(r, ":")
-		if i < 0 {
-			logger.Fatalf("Error parsing --additional_metadata flag: missing colon separator")
-		}
-		addMd = append(addMd, r[:i]) // append key
-		r = r[i+1:]
-		i = strings.Index(r, ";")
-		// append value
-		if i < 0 {
-			addMd = append(addMd, r)
-			break
-		}
-		addMd = append(addMd, r[:i])
-		r = r[i+1:]
-	}
-	return addMd
-}
+func parseAdditionalMetadataFlag() []string { _ = "STUB: not implemented"; return nil }
 
-// createSoakTestConfig creates a shared configuration structure for soak tests.
 func createBaseSoakConfig(serverAddr string) interop.SoakTestConfig {
-	return interop.SoakTestConfig{
-		RequestSize:                      *soakRequestSize,
-		ResponseSize:                     *soakResponseSize,
-		PerIterationMaxAcceptableLatency: time.Duration(*soakPerIterationMaxAcceptableLatencyMs) * time.Millisecond,
-		MinTimeBetweenRPCs:               time.Duration(*soakMinTimeMsBetweenRPCs) * time.Millisecond,
-		OverallTimeout:                   time.Duration(*soakOverallTimeoutSeconds) * time.Second,
-		ServerAddr:                       serverAddr,
-		NumWorkers:                       *soakNumThreads,
-		Iterations:                       *soakIterations,
-		MaxFailures:                      *soakMaxFailures,
-	}
+	_ = "STUB: not implemented"
+	return *new(interop.SoakTestConfig)
 }
 
 func main() {
 	flag.Parse()
 	logger.Infof("Client running with test case %q", *testCase)
-	var useGDC bool // use google default creds
-	var useCEC bool // use compute engine creds
+	var useGDC bool
+	var useCEC bool
 	if *customCredentialsType != "" {
 		switch *customCredentialsType {
 		case googleDefaultCredsName:

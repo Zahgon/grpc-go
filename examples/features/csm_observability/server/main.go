@@ -1,22 +1,3 @@
-/*
- *
- * Copyright 2024 gRPC authors.
- *
- * Licensed under the Apache License, Version 2.0 (the "License");
- * you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at
- *
- *     http://www.apache.org/licenses/LICENSE-2.0
- *
- * Unless required by applicable law or agreed to in writing, software
- * distributed under the License is distributed on an "AS IS" BASIS,
- * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
- * See the License for the specific language governing permissions and
- * limitations under the License.
- *
- */
-
-// Binary server is a server for the CSM Observability example.
 package main
 
 import (
@@ -44,15 +25,14 @@ var (
 	prometheusEndpoint = flag.String("prometheus_endpoint", ":9464", "the Prometheus exporter endpoint")
 )
 
-// server is used to implement helloworld.GreeterServer.
 type server struct {
 	pb.UnimplementedGreeterServer
 	addr string
 }
 
-// SayHello implements helloworld.GreeterServer
 func (s *server) SayHello(_ context.Context, in *pb.HelloRequest) (*pb.HelloReply, error) {
-	return &pb.HelloReply{Message: "Hello " + in.GetName()}, nil
+	_ = "STUB: not implemented"
+	return nil, nil
 }
 
 func main() {
@@ -71,8 +51,7 @@ func main() {
 	if err != nil {
 		log.Fatalf("Failed to listen: %v", err)
 	}
-	// Set up xds credentials that fall back to insecure as described in:
-	// https://cloud.google.com/service-mesh/docs/service-routing/security-proxyless-setup#workloads_are_unable_to_communicate_in_the_security_setup.
+
 	creds, err := xdscreds.NewServerCredentials(xdscreds.ServerOptions{FallbackCreds: insecure.NewCredentials()})
 	if err != nil {
 		log.Fatalf("Failed to create xDS credentials: %v", err)

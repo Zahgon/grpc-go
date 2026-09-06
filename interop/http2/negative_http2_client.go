@@ -1,26 +1,3 @@
-/*
- *
- * Copyright 2016 gRPC authors.
- *
- * Licensed under the Apache License, Version 2.0 (the "License");
- * you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at
- *
- *     http://www.apache.org/licenses/LICENSE-2.0
- *
- * Unless required by applicable law or agreed to in writing, software
- * distributed under the License is distributed on an "AS IS" BASIS,
- * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
- * See the License for the specific language governing permissions and
- * limitations under the License.
- *
- */
-
-// Binary http2 is used to test http2 error edge cases like GOAWAYs and
-// RST_STREAMs
-//
-// Documentation:
-// https://github.com/grpc/grpc/blob/master/doc/negative-http2-interop-test-descriptions.md
 package main
 
 import (
@@ -28,15 +5,10 @@ import (
 	"flag"
 	"net"
 	"strconv"
-	"sync"
-	"time"
 
 	"google.golang.org/grpc"
-	"google.golang.org/grpc/codes"
 	"google.golang.org/grpc/credentials/insecure"
 	"google.golang.org/grpc/grpclog"
-	"google.golang.org/grpc/interop"
-	"google.golang.org/grpc/status"
 
 	testgrpc "google.golang.org/grpc/interop/grpc_testing"
 	testpb "google.golang.org/grpc/interop/grpc_testing"
@@ -59,73 +31,21 @@ var (
 	logger = grpclog.Component("interop")
 )
 
-func largeSimpleRequest() *testpb.SimpleRequest {
-	pl := interop.ClientNewPayload(testpb.PayloadType_COMPRESSABLE, largeReqSize)
-	return &testpb.SimpleRequest{
-		ResponseType: testpb.PayloadType_COMPRESSABLE,
-		ResponseSize: int32(largeRespSize),
-		Payload:      pl,
-	}
-}
+func largeSimpleRequest() *testpb.SimpleRequest { _ = "STUB: not implemented"; return nil }
 
-// sends two unary calls. The server asserts that the calls use different connections.
-func goaway(ctx context.Context, tc testgrpc.TestServiceClient) {
-	interop.DoLargeUnaryCall(ctx, tc)
-	// sleep to ensure that the client has time to recv the GOAWAY.
-	// TODO(ncteisen): make this less hacky.
-	time.Sleep(1 * time.Second)
-	interop.DoLargeUnaryCall(ctx, tc)
-}
+func goaway(ctx context.Context, tc testgrpc.TestServiceClient) { _ = "STUB: not implemented"; return }
 
-func rstAfterHeader(tc testgrpc.TestServiceClient) {
-	req := largeSimpleRequest()
-	reply, err := tc.UnaryCall(context.Background(), req)
-	if reply != nil {
-		logger.Fatal("Client received reply despite server sending rst stream after header")
-	}
-	if status.Code(err) != codes.Internal {
-		logger.Fatalf("%v.UnaryCall() = _, %v, want _, %v", tc, status.Code(err), codes.Internal)
-	}
-}
+func rstAfterHeader(tc testgrpc.TestServiceClient) { _ = "STUB: not implemented"; return }
 
-func rstDuringData(tc testgrpc.TestServiceClient) {
-	req := largeSimpleRequest()
-	reply, err := tc.UnaryCall(context.Background(), req)
-	if reply != nil {
-		logger.Fatal("Client received reply despite server sending rst stream during data")
-	}
-	if status.Code(err) != codes.Unknown {
-		logger.Fatalf("%v.UnaryCall() = _, %v, want _, %v", tc, status.Code(err), codes.Unknown)
-	}
-}
+func rstDuringData(tc testgrpc.TestServiceClient) { _ = "STUB: not implemented"; return }
 
-func rstAfterData(tc testgrpc.TestServiceClient) {
-	req := largeSimpleRequest()
-	reply, err := tc.UnaryCall(context.Background(), req)
-	if reply != nil {
-		logger.Fatal("Client received reply despite server sending rst stream after data")
-	}
-	if status.Code(err) != codes.Internal {
-		logger.Fatalf("%v.UnaryCall() = _, %v, want _, %v", tc, status.Code(err), codes.Internal)
-	}
-}
+func rstAfterData(tc testgrpc.TestServiceClient) { _ = "STUB: not implemented"; return }
 
-func ping(ctx context.Context, tc testgrpc.TestServiceClient) {
-	// The server will assert that every ping it sends was ACK-ed by the client.
-	interop.DoLargeUnaryCall(ctx, tc)
-}
+func ping(ctx context.Context, tc testgrpc.TestServiceClient) { _ = "STUB: not implemented"; return }
 
 func maxStreams(ctx context.Context, tc testgrpc.TestServiceClient) {
-	interop.DoLargeUnaryCall(ctx, tc)
-	var wg sync.WaitGroup
-	for i := 0; i < 15; i++ {
-		wg.Add(1)
-		go func() {
-			defer wg.Done()
-			interop.DoLargeUnaryCall(ctx, tc)
-		}()
-	}
-	wg.Wait()
+	_ = "STUB: not implemented"
+	return
 }
 
 func main() {

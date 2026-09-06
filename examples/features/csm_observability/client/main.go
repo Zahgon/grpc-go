@@ -1,22 +1,3 @@
-/*
- *
- * Copyright 2024 gRPC authors.
- *
- * Licensed under the Apache License, Version 2.0 (the "License");
- * you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at
- *
- *     http://www.apache.org/licenses/LICENSE-2.0
- *
- * Unless required by applicable law or agreed to in writing, software
- * distributed under the License is distributed on an "AS IS" BASIS,
- * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
- * See the License for the specific language governing permissions and
- * limitations under the License.
- *
- */
-
-// Binary client is a client for the CSM Observability example.
 package main
 
 import (
@@ -33,7 +14,7 @@ import (
 	pb "google.golang.org/grpc/examples/helloworld/helloworld"
 	"google.golang.org/grpc/stats/opentelemetry"
 	"google.golang.org/grpc/stats/opentelemetry/csm"
-	_ "google.golang.org/grpc/xds" // To install the xds resolvers and balancers.
+	_ "google.golang.org/grpc/xds"
 
 	"github.com/prometheus/client_golang/prometheus/promhttp"
 	"go.opentelemetry.io/otel/exporters/prometheus"
@@ -60,8 +41,6 @@ func main() {
 	cleanup := csm.EnableObservability(context.Background(), opentelemetry.Options{MetricsOptions: opentelemetry.MetricsOptions{MeterProvider: provider}})
 	defer cleanup()
 
-	// Set up xds credentials that fall back to insecure as described in:
-	// https://cloud.google.com/service-mesh/docs/service-routing/security-proxyless-setup#workloads_are_unable_to_communicate_in_the_security_setup.
 	creds, err := xdscreds.NewClientCredentials(xdscreds.ClientOptions{FallbackCreds: insecure.NewCredentials()})
 	if err != nil {
 		log.Fatalf("Failed to create xDS credentials: %v", err)
@@ -73,8 +52,6 @@ func main() {
 	defer cc.Close()
 	c := pb.NewGreeterClient(cc)
 
-	// Make an RPC every second. This should trigger telemetry to be emitted from
-	// the client and the server.
 	for {
 		ctx, cancel := context.WithTimeout(context.Background(), time.Second*5)
 		r, err := c.SayHello(ctx, &pb.HelloRequest{Name: *name})

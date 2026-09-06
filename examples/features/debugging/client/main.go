@@ -1,23 +1,3 @@
-/*
- *
- * Copyright 2018 gRPC authors.
- *
- * Licensed under the Apache License, Version 2.0 (the "License");
- * you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at
- *
- *     http://www.apache.org/licenses/LICENSE-2.0
- *
- * Unless required by applicable law or agreed to in writing, software
- * distributed under the License is distributed on an "AS IS" BASIS,
- * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
- * See the License for the specific language governing permissions and
- * limitations under the License.
- *
- */
-
-// Binary client demonstrates how to use logging and Channelz for debugging
-// gRPC operations.
 package main
 
 import (
@@ -47,7 +27,7 @@ var (
 
 func main() {
 	flag.Parse()
-	/***** Set up the server serving channelz service. *****/
+
 	lis, err := net.Listen("tcp", *addr)
 	if err != nil {
 		log.Fatalf("failed to listen: %v", err)
@@ -58,24 +38,19 @@ func main() {
 	go s.Serve(lis)
 	defer s.Stop()
 
-	/***** Initialize manual resolver and Dial *****/
 	r := manual.NewBuilderWithScheme("whatever")
 	r.InitialState(resolver.State{Addresses: []resolver.Address{{Addr: ":10001"}, {Addr: ":10002"}, {Addr: ":10003"}}})
-	// Set up a connection to the server.
+
 	conn, err := grpc.NewClient(r.Scheme()+":///test.server", grpc.WithTransportCredentials(insecure.NewCredentials()), grpc.WithResolvers(r), grpc.WithDefaultServiceConfig(`{"loadBalancingPolicy":"round_robin"}`))
 	if err != nil {
 		log.Fatalf("did not connect: %v", err)
 	}
 	defer conn.Close()
-	// Manually provide resolved addresses for the target.
 
 	c := pb.NewGreeterClient(conn)
 
-	// Contact the server and print out its response.
-
-	/***** Make 100 SayHello RPCs *****/
 	for i := 0; i < 100; i++ {
-		// Setting a 150ms timeout on the RPC.
+
 		ctx, cancel := context.WithTimeout(context.Background(), 150*time.Millisecond)
 		defer cancel()
 		r, err := c.SayHello(ctx, &pb.HelloRequest{Name: *name})
@@ -86,8 +61,5 @@ func main() {
 		}
 	}
 
-	/***** Wait for user exiting the program *****/
-	// Unless you exit the program (e.g. CTRL+C), channelz data will be available for querying.
-	// Users can take time to examine and learn about the info provided by channelz.
 	select {}
 }

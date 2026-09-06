@@ -1,22 +1,3 @@
-/*
- *
- * Copyright 2014 gRPC authors.
- *
- * Licensed under the Apache License, Version 2.0 (the "License");
- * you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at
- *
- *     http://www.apache.org/licenses/LICENSE-2.0
- *
- * Unless required by applicable law or agreed to in writing, software
- * distributed under the License is distributed on an "AS IS" BASIS,
- * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
- * See the License for the specific language governing permissions and
- * limitations under the License.
- *
- */
-
-// Binary client is an interop client.
 package main
 
 import (
@@ -33,9 +14,9 @@ import (
 	"google.golang.org/grpc/grpclog"
 	"google.golang.org/grpc/interop"
 
-	_ "google.golang.org/grpc/balancer/grpclb"      // Register the grpclb load balancing policy.
-	_ "google.golang.org/grpc/balancer/rls"         // Register the RLS load balancing policy.
-	_ "google.golang.org/grpc/xds/googledirectpath" // Register xDS resolver required for c2p directpath.
+	_ "google.golang.org/grpc/balancer/grpclb"
+	_ "google.golang.org/grpc/balancer/rls"
+	_ "google.golang.org/grpc/xds/googledirectpath"
 
 	testgrpc "google.golang.org/grpc/interop/grpc_testing"
 )
@@ -73,7 +54,7 @@ type clientConfig struct {
 
 func main() {
 	flag.Parse()
-	// validate flags
+
 	uris := strings.Split(*serverURIs, ",")
 	creds := strings.Split(*credentialsTypes, ",")
 	if len(uris) != len(creds) {
@@ -106,7 +87,6 @@ func main() {
 		})
 	}
 
-	// run soak tests with the different clients
 	logger.Infof("Clients running with test case %q", *testCase)
 	var wg sync.WaitGroup
 	var channelForTest func() (*grpc.ClientConn, func())
